@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EthereumApi.Web", "EthereumApi.Web\EthereumApi.Web.csproj", "{546F72A8-CE11-472A-AF5E-6471376DCC9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EthereumApi.Core", "EthereumApi.Core\EthereumApi.Core.csproj", "{6F0A027B-BFE3-4EA5-9325-21E4B2E2FC42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EthereumApi.Infrastructure", "EthereumApi.Infrastructure\EthereumApi.Infrastructure.csproj", "{110423B5-82F8-4782-8E02-CBD1EC299F6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EthereumApi.Domain", "EthereumApi.Domain\EthereumApi.Domain.csproj", "{B1D0FA21-BA6A-4DCA-B839-3F214EAEEC5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EthereumApi.Helpers", "EthereumApi.Helpers\EthereumApi.Helpers.csproj", "{D89DCCF6-A07B-4C30-AE41-CCABE30E8667}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EthereumApi.Tests", "EthereumApi.Tests\EthereumApi.Tests.csproj", "{4360FD7F-AA5B-43FD-8905-B493CB631A1C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{546F72A8-CE11-472A-AF5E-6471376DCC9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{546F72A8-CE11-472A-AF5E-6471376DCC9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{546F72A8-CE11-472A-AF5E-6471376DCC9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{546F72A8-CE11-472A-AF5E-6471376DCC9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F0A027B-BFE3-4EA5-9325-21E4B2E2FC42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F0A027B-BFE3-4EA5-9325-21E4B2E2FC42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F0A027B-BFE3-4EA5-9325-21E4B2E2FC42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F0A027B-BFE3-4EA5-9325-21E4B2E2FC42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{110423B5-82F8-4782-8E02-CBD1EC299F6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{110423B5-82F8-4782-8E02-CBD1EC299F6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{110423B5-82F8-4782-8E02-CBD1EC299F6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{110423B5-82F8-4782-8E02-CBD1EC299F6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1D0FA21-BA6A-4DCA-B839-3F214EAEEC5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1D0FA21-BA6A-4DCA-B839-3F214EAEEC5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1D0FA21-BA6A-4DCA-B839-3F214EAEEC5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1D0FA21-BA6A-4DCA-B839-3F214EAEEC5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D89DCCF6-A07B-4C30-AE41-CCABE30E8667}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D89DCCF6-A07B-4C30-AE41-CCABE30E8667}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D89DCCF6-A07B-4C30-AE41-CCABE30E8667}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D89DCCF6-A07B-4C30-AE41-CCABE30E8667}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4360FD7F-AA5B-43FD-8905-B493CB631A1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4360FD7F-AA5B-43FD-8905-B493CB631A1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4360FD7F-AA5B-43FD-8905-B493CB631A1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4360FD7F-AA5B-43FD-8905-B493CB631A1C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D29DE7E3-6250-410F-A168-91E122D5E035}
+	EndGlobalSection
+EndGlobal
