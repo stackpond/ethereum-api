@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Numerics;
 using AutoMapper;
 using EthereumApi.Domain;
 using EthereumApi.Infrastructure.RequestResponse;
@@ -19,8 +21,12 @@ namespace EthereumApi.Infrastructure.Mappers
                 .ForMember(dest => dest.BlockHash, opt => opt.MapFrom(src => src.Result.BlockHash))
                 .ForMember(dest => dest.BlockNumber,
                     opt => opt.MapFrom(src => Convert.ToUInt64(src.Result.BlockNumber, 16)))
-                .ForMember(dest => dest.Gas, opt => opt.MapFrom(src => Convert.ToUInt64(src.Result.Gas, 16)))
-                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => Convert.ToUInt64(src.Result.Value, 16)))
+                .ForMember(dest => dest.Gas,
+                    opt => opt.MapFrom(src =>
+                        BigInteger.Parse(src.Result.Gas.Replace("0x", "0"), NumberStyles.AllowHexSpecifier)))
+                .ForMember(dest => dest.Value,
+                    opt => opt.MapFrom(src =>
+                        BigInteger.Parse(src.Result.Value.Replace("0x", "0"), NumberStyles.AllowHexSpecifier)))
                 .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.Result.From))
                 .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.Result.To));
         }

@@ -12,34 +12,34 @@ using TransactionDtoCollection = System.Collections.Generic.List<EthereumApi.Cor
 
 namespace EthereumApi.Core.Messaging
 {
-    public class GetTransactionsByBlockNumberCommand : IRequest<CommandResult<TransactionDtoCollection>>
+    public class GetTransactionsByAddressCommand : IRequest<CommandResult<TransactionDtoCollection>>
     {
-        public GetTransactionsByBlockNumberCommand(ulong blockNumber, int pageNumber)
+        public GetTransactionsByAddressCommand(string address, int pageNumber)
         {
-            BlockNumber = blockNumber;
+            Address = address;
             PageNumber = pageNumber;
         }
 
-        public ulong BlockNumber { get; }
+        public string Address { get; }
         public int PageNumber { get; }
     }
 
-    public class GetTransactionsByBlockNumberCommandHandler : IRequestHandler<GetTransactionsByBlockNumberCommand,
+    public class GetTransactionsByAddressCommandHandler : IRequestHandler<GetTransactionsByAddressCommand,
         CommandResult<TransactionDtoCollection>>
     {
-        private readonly ILogger<GetTransactionsByBlockNumberCommandHandler> _logger;
+        private readonly ILogger<GetTransactionsByAddressCommandHandler> _logger;
         private readonly IMapper _mapper;
         private readonly ITransactionRepository _transactionRepository;
 
-        public GetTransactionsByBlockNumberCommandHandler(IMapper mapper,
-            ILogger<GetTransactionsByBlockNumberCommandHandler> logger, ITransactionRepository transactionRepository)
+        public GetTransactionsByAddressCommandHandler(IMapper mapper,
+            ILogger<GetTransactionsByAddressCommandHandler> logger, ITransactionRepository transactionRepository)
         {
             _mapper = mapper;
             _logger = logger;
             _transactionRepository = transactionRepository;
         }
 
-        public async Task<CommandResult<TransactionDtoCollection>> Handle(GetTransactionsByBlockNumberCommand request,
+        public async Task<CommandResult<TransactionDtoCollection>> Handle(GetTransactionsByAddressCommand request,
             CancellationToken cancellationToken)
         {
             string failureReason;
@@ -48,20 +48,20 @@ namespace EthereumApi.Core.Messaging
             try
             {
                 var transactions =
-                    await _transactionRepository.GetTransactionsByBlockNumber(request.BlockNumber, request.PageNumber);
+                    await _transactionRepository.GetTransactionsByAddress(request.Address, request.PageNumber);
                 var transactionDtos = _mapper.Map<IEnumerable<TransactionDto>>(transactions);
 
                 if (transactionDtos.Any())
                     return new CommandResult<TransactionDtoCollection>(new TransactionDtoCollection(transactionDtos));
 
                 failureReason = string.Format(Resource.TransactionsNotFoundFormat,
-                    request.BlockNumber);
+                    request.Address);
             }
             catch (Exception e)
             {
                 failureException = e;
                 failureReason = string.Format(Resource.FailedToRetrieveTransactionsFormat,
-                    request.BlockNumber);
+                    request.Address);
             }
 
             _logger.LogError(failureException, failureReason);

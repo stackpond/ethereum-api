@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EthereumApi.Core.Interfaces.Repositories;
 using EthereumApi.Domain;
 using EthereumApi.Infrastructure.RequestResponse;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RestSharp;
@@ -14,27 +18,139 @@ namespace EthereumApi.Infrastructure.Repositories
     {
         private readonly IBlockRepository _blockRepository;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _memoryCache;
 
-        public TransactionRepository(IMapper mapper, IConfiguration configuration, IBlockRepository blockRepository)
+        public TransactionRepository(IMapper mapper, IConfiguration configuration, IBlockRepository blockRepository,
+            IMemoryCache memoryCache, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _configuration = configuration;
             _blockRepository = blockRepository;
+            _memoryCache = memoryCache;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<IEnumerable<Transaction>> GetTransactionsByAddress(ulong blockNumber)
+
+        public async Task<uint> GetTransactionsCountByBlockNumber(ulong blockNumber)
         {
-            return await Task.Run(() => new List<Transaction>());
+            var cacheKey = $"BlockTransactionCount_{blockNumber}";
+
+            if (!_memoryCache.TryGetValue(cacheKey, out uint blockTransactionCount))
+            {
+                var apiClient = new RestClient(_configuration[Constants.Infura.InfuraApiUrlConfigKey]);
+                var apiRequest =
+                    new RestRequest(_configuration[Constants.Infura.InfuraProjectIdConfigKey], Method.POST);
+
+                apiRequest.AddJsonBody(new
+                {
+                    jsonrpc = Constants.Ethereum.JsonRpcVersion,
+                    method = Constants.Ethereum.GetBlockTransactionCountCommandName,
+                    @params = new JsonArray {$"0x{blockNumber:X2}"},
+                    id = Constants.Ethereum.NetworkId
+                }, Constants.JsonContentType);
+
+                var apiResponse = await apiClient.ExecuteAsync(apiRequest);
+                var apiBlockTransactionCountResponse =
+                    JsonConvert.DeserializeObject<InfuraGetBlockTransactionCountApiResponse>(apiResponse.Content);
+                blockTransactionCount = Convert.ToUInt32(apiBlockTransactionCountResponse.Result, 16);
+                var cacheEntryOptions = new MemoryCacheEntryOptions().SetSize(1)
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(int.Parse(_configuration["cacheExpirationInMinutes"])));
+                _memoryCache.Set(cacheKey, blockTransactionCount, cacheEntryOptions);
+            }
+
+            return blockTransactionCount;
         }
 
-        public async Task<IEnumerable<Transaction>> GetTransactionsByBlockNumber(ulong blockNumber)
+        public async Task<IEnumerable<Transaction>> GetTransactionsByAddress(string address, int pageNumber)
+        {
+            var transactions = new List<Transaction>();
+            var latestBlock = await _blockRepository.GetLatest();
+            var numberOfItemsPerPage = int.Parse(_configuration["numberOfItemsPerPage"]);
+
+            var currentBlockNumber = latestBlock.Number;
+            var minimumTransactionsToProcess = numberOfItemsPerPage * pageNumber;
+
+            do
+            {
+                var blockTransactionCount = await GetTransactionsCountByBlockNumber(currentBlockNumber);
+
+                for (var blockTransactionIndex = 0;
+                    blockTransactionIndex < blockTransactionCount;
+                    blockTransactionIndex++)
+                {
+                    _httpContextAccessor.HttpContext.RequestAborted.ThrowIfCancellationRequested();
+
+                    var transaction =
+                        await GetTransactionByBlockNumberAndIndex(currentBlockNumber, blockTransactionIndex);
+
+                    if (!string.IsNullOrWhiteSpace(transaction.To) &&
+                        transaction.To.Equals(address, StringComparison.OrdinalIgnoreCase) ||
+                        !string.IsNullOrWhiteSpace(transaction.From) &&
+                        transaction.From.Equals(address, StringComparison.OrdinalIgnoreCase))
+                        transactions.Add(transaction);
+
+                    if (transactions.Count == minimumTransactionsToProcess)
+                        return transactions.Skip(numberOfItemsPerPage * (pageNumber - 1)).Take(numberOfItemsPerPage);
+                }
+
+                currentBlockNumber--; // Move to previous block
+                _httpContextAccessor.HttpContext.RequestAborted.ThrowIfCancellationRequested();
+            } while (true);
+        }
+
+        public async Task<IEnumerable<Transaction>> GetTransactionsByBlockNumber(ulong blockNumber, int pageNumber)
         {
             var transactions = new List<Transaction>();
             var block = await _blockRepository.GetByNumber(blockNumber);
             var apiClient = new RestClient(_configuration[Constants.Infura.InfuraApiUrlConfigKey]);
 
-            foreach (var transactionHash in block.TransactionHashes)
+            var numberOfItemsPerPage = int.Parse(_configuration["numberOfItemsPerPage"]);
+
+            foreach (var transactionHash in block.TransactionHashes.Skip(numberOfItemsPerPage * (pageNumber - 1))
+                .Take(numberOfItemsPerPage))
+            {
+                var cacheKey = $"Transaction_{transactionHash}";
+                _httpContextAccessor.HttpContext.RequestAborted.ThrowIfCancellationRequested();
+
+                if (!_memoryCache.TryGetValue(cacheKey, out Transaction transaction))
+                {
+                    var apiRequest =
+                        new RestRequest(_configuration[Constants.Infura.InfuraProjectIdConfigKey], Method.POST);
+
+                    apiRequest.AddJsonBody(new
+                    {
+                        jsonrpc = Constants.Ethereum.JsonRpcVersion,
+                        method = Constants.Ethereum.GetTransactionHashCommandName,
+                        @params = new JsonArray {transactionHash},
+                        id = Constants.Ethereum.NetworkId
+                    }, Constants.JsonContentType);
+
+                    var apiResponse = await apiClient.ExecuteAsync(apiRequest);
+                    var apiTransactionResponse =
+                        JsonConvert.DeserializeObject<InfuraGetTransactionApiResponse>(apiResponse.Content);
+
+                    transaction = _mapper.Map<Transaction>(apiTransactionResponse);
+
+                    var cacheEntryOptions = new MemoryCacheEntryOptions().SetSize(1)
+                        .SetSlidingExpiration(
+                            TimeSpan.FromMinutes(int.Parse(_configuration["cacheExpirationInMinutes"])));
+                    _memoryCache.Set(cacheKey, transaction, cacheEntryOptions);
+                }
+
+                transactions.Add(transaction);
+            }
+
+            return transactions;
+        }
+
+        public async Task<Transaction> GetTransactionByBlockNumberAndIndex(ulong blockNumber, int index)
+        {
+            var cacheKey = $"Transaction_{blockNumber}_{index}";
+            var apiClient = new RestClient(_configuration[Constants.Infura.InfuraApiUrlConfigKey]);
+
+            if (!_memoryCache.TryGetValue(cacheKey, out Transaction transaction))
             {
                 var apiRequest =
                     new RestRequest(_configuration[Constants.Infura.InfuraProjectIdConfigKey], Method.POST);
@@ -42,8 +158,8 @@ namespace EthereumApi.Infrastructure.Repositories
                 apiRequest.AddJsonBody(new
                 {
                     jsonrpc = Constants.Ethereum.JsonRpcVersion,
-                    method = Constants.Ethereum.GetTransactionHashCommandName,
-                    @params = new JsonArray {transactionHash},
+                    method = Constants.Ethereum.GetTransactionByBlockNumberAndIndexCommandName,
+                    @params = new JsonArray {$"0x{blockNumber:X2}", $"0x{index:X1}"},
                     id = Constants.Ethereum.NetworkId
                 }, Constants.JsonContentType);
 
@@ -51,11 +167,15 @@ namespace EthereumApi.Infrastructure.Repositories
                 var apiTransactionResponse =
                     JsonConvert.DeserializeObject<InfuraGetTransactionApiResponse>(apiResponse.Content);
 
-                var transaction = _mapper.Map<Transaction>(apiTransactionResponse);
-                transactions.Add(transaction);
+                transaction = _mapper.Map<Transaction>(apiTransactionResponse);
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions().SetSize(1)
+                    .SetSlidingExpiration(
+                        TimeSpan.FromMinutes(int.Parse(_configuration["cacheExpirationInMinutes"])));
+                _memoryCache.Set(cacheKey, transaction, cacheEntryOptions);
             }
 
-            return transactions;
+            return transaction;
         }
     }
 }

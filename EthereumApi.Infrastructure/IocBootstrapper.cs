@@ -2,6 +2,7 @@
 using AutoMapper;
 using EthereumApi.Core.Interfaces.Repositories;
 using EthereumApi.Infrastructure.Repositories;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EthereumApi.Infrastructure
@@ -13,6 +14,7 @@ namespace EthereumApi.Infrastructure
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddScoped<IBlockRepository, BlockRepository>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddSingleton<IMemoryCache>(_ => new MemoryCache(new MemoryCacheOptions()));
         }
     }
 }

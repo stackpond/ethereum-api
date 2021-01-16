@@ -1,4 +1,6 @@
-﻿namespace EthereumApi.Domain
+﻿using System.Numerics;
+
+namespace EthereumApi.Domain
 {
     public class Transaction
     {
@@ -7,7 +9,7 @@
         public ulong BlockNumber { get; set; }
         public string From { get; set; }
         public string To { get; set; }
-        public ulong Value { get; set; }
-        public ulong Gas { get; set; }
+        public BigInteger Value { get; set; }
+        public BigInteger Gas { get; set; }
     }
 }

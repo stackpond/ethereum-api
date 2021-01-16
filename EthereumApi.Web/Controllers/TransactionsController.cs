@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using EthereumApi.Core.Dto;
+﻿using System.Threading.Tasks;
 using EthereumApi.Core.Messaging;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -20,16 +18,28 @@ namespace EthereumApi.Web.Controllers
         }
 
         [HttpGet("addresses/{address}/transactions")]
-        public IEnumerable<TransactionDto> GetByAddress(string address)
+        public async Task<IActionResult> GetByAddress(string address, [FromQuery] int pageNumber)
         {
-            return new List<TransactionDto>();
+            var commandResult = await _mediator.Send(new GetTransactionsByAddressCommand(address, pageNumber));
+            return commandResult
+                ? Ok(new {Transactions = commandResult.Result})
+                : StatusCode(500, new {commandResult.FailureReason});
         }
 
 
         [HttpGet("blocks/{blockNumber:int}/transactions")]
-        public async Task<IActionResult> GetByBlockNumber(ulong blockNumber)
+        public async Task<IActionResult> GetByBlockNumber(ulong blockNumber, [FromQuery] int pageNumber)
         {
-            var commandResult = await _mediator.Send(new GetTransactionsByBlockNumberCommand(blockNumber));
+            var commandResult = await _mediator.Send(new GetTransactionsByBlockNumberCommand(blockNumber, pageNumber));
+            return commandResult
+                ? Ok(new {Transactions = commandResult.Result})
+                : StatusCode(500, new {commandResult.FailureReason});
+        }
+
+        [HttpGet("blocks/{blockNumber:int}/transactionCount")]
+        public async Task<IActionResult> GetTransactionCountByBlockNumber(ulong blockNumber)
+        {
+            var commandResult = await _mediator.Send(new GetTransactionCountByBlockNumberCommand(blockNumber));
             return commandResult
                 ? Ok(commandResult.Result)
                 : StatusCode(500, JsonConvert.SerializeObject(new {commandResult.FailureReason}));
