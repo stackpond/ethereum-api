@@ -1,0 +1,15 @@
+language: csharp
+mono: none
+sudo: required
+dist: xenial
+dotnet: 3.1
+script:
+    - dotnet build EthereumApi.sln
+global:
+    - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
+    - DOTNET_CLI_TELEMETRY_OPTOUT=1
+deploy:
+  app: stackpond-ethereum-api
+  provider: heroku
+  api_key:
+    secure: $HEROKU_TOKEN
