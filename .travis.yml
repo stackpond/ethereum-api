@@ -4,14 +4,14 @@ sudo: required
 dist: xenial
 dotnet: 3.1
 script:
-    - dotnet build EthereumApi.sln
+- dotnet build EthereumApi.sln
 global:
-    - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
-    - DOTNET_CLI_TELEMETRY_OPTOUT=1
+- DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
+- DOTNET_CLI_TELEMETRY_OPTOUT=1
 deploy:
   app: stackpond-ethereum-api
   provider: heroku
   api_key:
-    secure: $HEROKU_TOKEN
+    secure: PSWCg45vkWgVxGpE1a8UJiS2wMVbPKwtOiF4nxXO5/o6KpUugmzFWgLR+AuYxDdK3CLaH6izJoTKCPltX/X0AEPd1RMX7zh4RdedSugq3dnCr4Bmk5d78WFVJrzdV9qtXR5WsxB26hDWxrtc9qb+JWhei0nj98TUZmTvZ2jx3VCDEw+3OmklZjJ+GCLBKEqmneQNkb5hOuqb9/VgR7T6f+sxGxpPOrsw6DWAmQ5z6vCKWELyRBktnl1ZM5Fu7i7i4JDEgWhXbYznDIQsfvRjJudDgB7IHtBMotL+tW6PlqJfmoAIA/AcxTgIDoGGA9fymDqpS8Qcl6eMSna/ZXqcx9LG+pIV1/Z6sImMpWPNHezWCAtRq7nnDeDbZ13X6t7vMWXF6t0YV6CIUvL8BVCW8XL3nWk8AsgPYFaVl+KiUsNq31o9TiFyZGG19XidRpoe2gsidfiASif/mdKS+IQL2KkHv42ksufoSqmPD7Y4G+0Khix5Qj9123rMWfaknE35xWLLPrHav6Hm35XAb7yQ3jFyNv80/y63M0r7SgILlUNwh8FkJV249/jiVIFiLScyW9b1bcrcB6KIDfsiWRhfedjgjQlDHjSyB11CT5EAPXA0FRG6NQQ/8IQdqzqKTP+dBKvBdy+kii18r1IK4wl1eYa3w6TF9a9nYVYTsOzKiRY=
   on:
     branch: main
