@@ -22,7 +22,7 @@ namespace EthereumApi.Web.Controllers
         {
             var commandResult = await _mediator.Send(new GetTransactionsByAddressCommand(address, pageNumber));
             return commandResult
-                ? Ok(new {Transactions = commandResult.Result})
+                ? Ok(commandResult.Result)
                 : StatusCode(500, new {commandResult.FailureReason});
         }
 
@@ -32,7 +32,7 @@ namespace EthereumApi.Web.Controllers
         {
             var commandResult = await _mediator.Send(new GetTransactionsByBlockNumberCommand(blockNumber, pageNumber));
             return commandResult
-                ? Ok(new {Transactions = commandResult.Result})
+                ? Ok(commandResult.Result)
                 : StatusCode(500, new {commandResult.FailureReason});
         }
 
