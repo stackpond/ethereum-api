@@ -39,4 +39,4 @@ The transaction results are paged for better user experience.
 
 Infura API has rate limit imposed (refer https://infura.io/pricing) which may also slow down the processing.
 
-The search by address is especially slow because Infura API does not provide any API for this use. Hence every transactions of every block needs to be processed and it can a very long time before the results are fetched. I have few ideas to speed this up by creating an indexer service separate from core API which can then be consumed for faster processing. This is TBD.
+**The search by address is especially slow because Infura API does not provide any API for this use. Hence every transactions of every block needs to be processed and it can take a very long time before the results are fetched. I have few ideas to speed this up by creating an indexer service separate from core API which can then be consumed for faster processing. This is TBD.**
