@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/stackpond/ethereum-api.svg?branch=main)](https://travis-ci.com/stackpond/ethereum-api)
+[![Build Status](https://travis-ci.com/stackpond/ethereum-api.svg?token=ZiEpqMrtCtoYozqmY1kh&branch=main)](https://travis-ci.com/stackpond/ethereum-api)
 
 # Ethereum Explorer API
 
