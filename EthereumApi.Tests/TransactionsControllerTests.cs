@@ -37,7 +37,7 @@ namespace EthereumApi.Tests
         }
 
         [Test]
-        public async Task ShouldReturn200WhenGetByBlockNumberFails()
+        public async Task ShouldReturn500WhenGetByBlockNumberFails()
         {
             // Arrange
             _mediator.Setup(m => m.Send(It.IsAny<GetTransactionsByBlockNumberCommand>(), It.IsAny<CancellationToken>()))
@@ -67,7 +67,7 @@ namespace EthereumApi.Tests
         }
 
         [Test]
-        public async Task ShouldReturn200WhenGetByAddressFails()
+        public async Task ShouldReturn500WhenGetByAddressFails()
         {
             // Arrange
             _mediator.Setup(m => m.Send(It.IsAny<GetTransactionsByAddressCommand>(), It.IsAny<CancellationToken>()))
