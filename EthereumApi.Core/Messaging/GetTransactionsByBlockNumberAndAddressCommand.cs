@@ -26,15 +26,15 @@ namespace EthereumApi.Core.Messaging
         public int PageNumber { get; }
     }
 
-    public class GetTransactionsByAddressCommandHandler : IRequestHandler<GetTransactionsByBlockNumberAndAddressCommand,
+    public class GetTransactionsByBlockNumberAndAddressCommandHandler : IRequestHandler<GetTransactionsByBlockNumberAndAddressCommand,
         CommandResult<TransactionDtoCollection>>
     {
-        private readonly ILogger<GetTransactionsByAddressCommandHandler> _logger;
+        private readonly ILogger<GetTransactionsByBlockNumberAndAddressCommandHandler> _logger;
         private readonly IMapper _mapper;
         private readonly ITransactionRepository _transactionRepository;
 
-        public GetTransactionsByAddressCommandHandler(IMapper mapper,
-            ILogger<GetTransactionsByAddressCommandHandler> logger, ITransactionRepository transactionRepository)
+        public GetTransactionsByBlockNumberAndAddressCommandHandler(IMapper mapper,
+            ILogger<GetTransactionsByBlockNumberAndAddressCommandHandler> logger, ITransactionRepository transactionRepository)
         {
             _mapper = mapper;
             _logger = logger;
