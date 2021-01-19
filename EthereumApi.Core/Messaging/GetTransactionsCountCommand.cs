@@ -18,16 +18,16 @@ namespace EthereumApi.Core.Messaging
         public ulong BlockNumber { get; }
     }
 
-    public class GetTransactionsCountCommandCommandHandler : IRequestHandler<
+    public class GetTransactionsCountCommandHandler : IRequestHandler<
         GetTransactionsCountCommand,
         CommandResult<uint>>
     {
-        private readonly ILogger<GetTransactionsCountCommandCommandHandler> _logger;
+        private readonly ILogger<GetTransactionsCountCommandHandler> _logger;
         private readonly IMapper _mapper;
         private readonly ITransactionRepository _transactionRepository;
 
-        public GetTransactionsCountCommandCommandHandler(IMapper mapper,
-            ILogger<GetTransactionsCountCommandCommandHandler> logger,
+        public GetTransactionsCountCommandHandler(IMapper mapper,
+            ILogger<GetTransactionsCountCommandHandler> logger,
             ITransactionRepository transactionRepository)
         {
             _mapper = mapper;
