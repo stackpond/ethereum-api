@@ -144,16 +144,16 @@ namespace EthereumApi.Infrastructure.Repositories
                         .SetSlidingExpiration(
                             TimeSpan.FromMinutes(int.Parse(_configuration["cacheExpirationInMinutes"])));
                     _memoryCache.Set(cacheKey, transaction, cacheEntryOptions);
-
-                    if (!string.IsNullOrWhiteSpace(transaction.To) && transaction.To.Equals(address, StringComparison.OrdinalIgnoreCase) ||
-                        !string.IsNullOrWhiteSpace(transaction.From) && transaction.From.Equals(address, StringComparison.OrdinalIgnoreCase))
-                    {
-                        transactions.Add(transaction);
-                    }
-
-                    if (transactions.Count == minimumTransactionsToProcess)
-                        return transactions.Skip(numberOfItemsPerPage * (pageNumber - 1)).Take(numberOfItemsPerPage);
                 }
+
+                if (!string.IsNullOrWhiteSpace(transaction.To) && transaction.To.Equals(address, StringComparison.OrdinalIgnoreCase) ||
+                    !string.IsNullOrWhiteSpace(transaction.From) && transaction.From.Equals(address, StringComparison.OrdinalIgnoreCase))
+                {
+                    transactions.Add(transaction);
+                }
+
+                if (transactions.Count == minimumTransactionsToProcess)
+                    return transactions.Skip(numberOfItemsPerPage * (pageNumber - 1)).Take(numberOfItemsPerPage);
             }
 
             return transactions;
