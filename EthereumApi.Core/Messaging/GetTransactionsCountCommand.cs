@@ -8,9 +8,9 @@ using Microsoft.Extensions.Logging;
 
 namespace EthereumApi.Core.Messaging
 {
-    public class GetTransactionCountCommand : IRequest<CommandResult<uint>>
+    public class GetTransactionsCountCommand : IRequest<CommandResult<uint>>
     {
-        public GetTransactionCountCommand(ulong blockNumber)
+        public GetTransactionsCountCommand(ulong blockNumber)
         {
             BlockNumber = blockNumber;
         }
@@ -18,16 +18,16 @@ namespace EthereumApi.Core.Messaging
         public ulong BlockNumber { get; }
     }
 
-    public class GetTransactionCountCommandCommandHandler : IRequestHandler<
-        GetTransactionCountCommand,
+    public class GetTransactionsCountCommandCommandHandler : IRequestHandler<
+        GetTransactionsCountCommand,
         CommandResult<uint>>
     {
-        private readonly ILogger<GetTransactionCountCommandCommandHandler> _logger;
+        private readonly ILogger<GetTransactionsCountCommandCommandHandler> _logger;
         private readonly IMapper _mapper;
         private readonly ITransactionRepository _transactionRepository;
 
-        public GetTransactionCountCommandCommandHandler(IMapper mapper,
-            ILogger<GetTransactionCountCommandCommandHandler> logger,
+        public GetTransactionsCountCommandCommandHandler(IMapper mapper,
+            ILogger<GetTransactionsCountCommandCommandHandler> logger,
             ITransactionRepository transactionRepository)
         {
             _mapper = mapper;
@@ -35,7 +35,7 @@ namespace EthereumApi.Core.Messaging
             _transactionRepository = transactionRepository;
         }
 
-        public async Task<CommandResult<uint>> Handle(GetTransactionCountCommand request,
+        public async Task<CommandResult<uint>> Handle(GetTransactionsCountCommand request,
             CancellationToken cancellationToken)
         {
             try
