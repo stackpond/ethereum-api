@@ -29,7 +29,7 @@ namespace EthereumApi.Tests
                 .ReturnsAsync(new CommandResult<TransactionDtoCollection>(new TransactionDtoCollection()));
 
             // Act
-            var actionResult = await _transactionsController.GetByBlockNumberAndAddress(1, "0x1234", 1) as ObjectResult;
+            var actionResult = await _transactionsController.GetTransactionsByBlockNumberAndAddress(1, "0x1234", 1) as ObjectResult;
 
             // Assert
             Assert.NotNull(actionResult);
@@ -44,7 +44,7 @@ namespace EthereumApi.Tests
                 .ReturnsAsync(new CommandResult<TransactionDtoCollection>("Failed"));
 
             // Act
-            var actionResult = await _transactionsController.GetByBlockNumberAndAddress(1, " 0x1234", 1) as ObjectResult;
+            var actionResult = await _transactionsController.GetTransactionsByBlockNumberAndAddress(1, " 0x1234", 1) as ObjectResult;
 
             // Assert
             Assert.NotNull(actionResult);

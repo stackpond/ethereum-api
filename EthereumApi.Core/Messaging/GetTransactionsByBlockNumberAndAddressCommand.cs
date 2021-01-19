@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EthereumApi.Core.Dto;
 using EthereumApi.Core.Interfaces.Repositories;
+using EthereumApi.Domain;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using TransactionDtoCollection = System.Collections.Generic.List<EthereumApi.Core.Dto.TransactionDto>;
@@ -46,11 +47,18 @@ namespace EthereumApi.Core.Messaging
         {
             string failureReason;
             var failureException = default(Exception);
-
+            var transactions = default(IEnumerable<Transaction>);
             try
             {
-                var transactions =
-                    await _transactionRepository.GetTransactionsByBlockNumberAndAddress(request.BlockNumber, request.Address, request.PageNumber);
+                if (string.IsNullOrWhiteSpace(request.Address))
+                {
+                    transactions = await _transactionRepository.GetTransactionsByBlockNumber(request.BlockNumber, request.PageNumber);
+                }
+                else
+                {
+                    transactions = await _transactionRepository.GetTransactionsByBlockNumberAndAddress(request.BlockNumber, request.Address, request.PageNumber);
+                }
+
                 var transactionDtos = _mapper.Map<IEnumerable<TransactionDto>>(transactions);
 
                 if (transactionDtos.Any())
