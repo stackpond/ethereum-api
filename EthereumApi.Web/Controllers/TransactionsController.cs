@@ -2,7 +2,6 @@
 using EthereumApi.Core.Messaging;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace EthereumApi.Web.Controllers
 {
@@ -17,23 +16,13 @@ namespace EthereumApi.Web.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("addresses/{address}/transactions")]
-        public async Task<IActionResult> GetByAddress(string address, [FromQuery] int pageNumber)
-        {
-            var commandResult = await _mediator.Send(new GetTransactionsByAddressCommand(address, pageNumber));
-            return commandResult
-                ? Ok(commandResult.Result)
-                : StatusCode(500, new {commandResult.FailureReason});
-        }
-
-
         [HttpGet("blocks/{blockNumber:int}/transactions")]
         public async Task<IActionResult> GetByBlockNumber(ulong blockNumber, [FromQuery] int pageNumber)
         {
             var commandResult = await _mediator.Send(new GetTransactionsByBlockNumberCommand(blockNumber, pageNumber));
             return commandResult
                 ? Ok(commandResult.Result)
-                : StatusCode(500, new {commandResult.FailureReason});
+                : StatusCode(500, new { commandResult.FailureReason });
         }
 
         [HttpGet("blocks/{blockNumber:int}/transactionCount")]
@@ -42,7 +31,16 @@ namespace EthereumApi.Web.Controllers
             var commandResult = await _mediator.Send(new GetTransactionCountByBlockNumberCommand(blockNumber));
             return commandResult
                 ? Ok(commandResult.Result)
-                : StatusCode(500, JsonConvert.SerializeObject(new {commandResult.FailureReason}));
+                : StatusCode(500, new { commandResult.FailureReason });
+        }
+
+        [HttpGet("transactions")]
+        public async Task<IActionResult> GetByBlockNumberAndAddress([FromQuery] ulong blockNumber, [FromQuery] string address, int pageNumber)
+        {
+            var commandResult = await _mediator.Send(new GetTransactionsByBlockNumberAndAddressCommand(blockNumber, address, pageNumber));
+            return commandResult
+                ? Ok(commandResult.Result)
+                : StatusCode(500, new { commandResult.FailureReason });
         }
     }
 }

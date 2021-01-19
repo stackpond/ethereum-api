@@ -12,19 +12,21 @@ using TransactionDtoCollection = System.Collections.Generic.List<EthereumApi.Cor
 
 namespace EthereumApi.Core.Messaging
 {
-    public class GetTransactionsByAddressCommand : IRequest<CommandResult<TransactionDtoCollection>>
+    public class GetTransactionsByBlockNumberAndAddressCommand : IRequest<CommandResult<TransactionDtoCollection>>
     {
-        public GetTransactionsByAddressCommand(string address, int pageNumber)
+        public GetTransactionsByBlockNumberAndAddressCommand(ulong blockNumber, string address, int pageNumber)
         {
+            BlockNumber = blockNumber;
             Address = address;
             PageNumber = pageNumber;
         }
 
+        public ulong BlockNumber { get; }
         public string Address { get; }
         public int PageNumber { get; }
     }
 
-    public class GetTransactionsByAddressCommandHandler : IRequestHandler<GetTransactionsByAddressCommand,
+    public class GetTransactionsByAddressCommandHandler : IRequestHandler<GetTransactionsByBlockNumberAndAddressCommand,
         CommandResult<TransactionDtoCollection>>
     {
         private readonly ILogger<GetTransactionsByAddressCommandHandler> _logger;
@@ -39,7 +41,7 @@ namespace EthereumApi.Core.Messaging
             _transactionRepository = transactionRepository;
         }
 
-        public async Task<CommandResult<TransactionDtoCollection>> Handle(GetTransactionsByAddressCommand request,
+        public async Task<CommandResult<TransactionDtoCollection>> Handle(GetTransactionsByBlockNumberAndAddressCommand request,
             CancellationToken cancellationToken)
         {
             string failureReason;
@@ -48,7 +50,7 @@ namespace EthereumApi.Core.Messaging
             try
             {
                 var transactions =
-                    await _transactionRepository.GetTransactionsByAddress(request.Address, request.PageNumber);
+                    await _transactionRepository.GetTransactionsByBlockNumberAndAddress(request.BlockNumber, request.Address, request.PageNumber);
                 var transactionDtos = _mapper.Map<IEnumerable<TransactionDto>>(transactions);
 
                 if (transactionDtos.Any())
