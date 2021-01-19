@@ -6,8 +6,8 @@ namespace EthereumApi.Core.Interfaces.Repositories
 {
     public interface ITransactionRepository
     {
-        Task<uint> GetTransactionsCountByBlockNumber(ulong blockNumber);
-        Task<IEnumerable<Transaction>> GetTransactionsByBlockNumber(ulong blockNumber, int pageNumber);
-        Task<IEnumerable<Transaction>> GetTransactionsByBlockNumberAndAddress(ulong blockNumber, string address, int pageNumber);
+        Task<uint> GetTransactionsCount(ulong blockNumber);
+        Task<IEnumerable<Transaction>> GetTransactions(ulong blockNumber, int pageNumber);
+        Task<IEnumerable<Transaction>> GetTransactions(ulong blockNumber, string address, int pageNumber);
     }
 }

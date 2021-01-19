@@ -32,7 +32,7 @@ namespace EthereumApi.Infrastructure.Repositories
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<uint> GetTransactionsCountByBlockNumber(ulong blockNumber)
+        public async Task<uint> GetTransactionsCount(ulong blockNumber)
         {
             var cacheKey = $"BlockTransactionCount_{blockNumber}";
 
@@ -62,7 +62,7 @@ namespace EthereumApi.Infrastructure.Repositories
             return blockTransactionCount;
         }
 
-        public async Task<IEnumerable<Transaction>> GetTransactionsByBlockNumber(ulong blockNumber, int pageNumber)
+        public async Task<IEnumerable<Transaction>> GetTransactions(ulong blockNumber, int pageNumber)
         {
             var transactions = new List<Transaction>();
             var block = await _blockRepository.GetByNumber(blockNumber);
@@ -107,7 +107,7 @@ namespace EthereumApi.Infrastructure.Repositories
             return transactions;
         }
 
-        public async Task<IEnumerable<Transaction>> GetTransactionsByBlockNumberAndAddress(ulong blockNumber, string address, int pageNumber)
+        public async Task<IEnumerable<Transaction>> GetTransactions(ulong blockNumber, string address, int pageNumber)
         {
             var transactions = new List<Transaction>();
             var block = await _blockRepository.GetByNumber(blockNumber);

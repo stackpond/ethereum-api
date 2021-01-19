@@ -17,18 +17,18 @@ namespace EthereumApi.Web.Controllers
         }
 
         [HttpGet("blocks/{blockNumber:int}/transactionCount")]
-        public async Task<IActionResult> GetTransactionCountByBlockNumber(ulong blockNumber)
+        public async Task<IActionResult> GetTransactionCount(ulong blockNumber)
         {
-            var commandResult = await _mediator.Send(new GetTransactionCountByBlockNumberCommand(blockNumber));
+            var commandResult = await _mediator.Send(new GetTransactionCountCommand(blockNumber));
             return commandResult
                 ? Ok(commandResult.Result)
                 : StatusCode(500, new { commandResult.FailureReason });
         }
 
         [HttpGet("transactions")]
-        public async Task<IActionResult> GetTransactionsByBlockNumberAndAddress([FromQuery] ulong blockNumber, [FromQuery] string address, int pageNumber)
+        public async Task<IActionResult> GetTransactions([FromQuery] ulong blockNumber, [FromQuery] string address, int pageNumber)
         {
-            var commandResult = await _mediator.Send(new GetTransactionsByBlockNumberAndAddressCommand(blockNumber, address, pageNumber));
+            var commandResult = await _mediator.Send(new GetTransactionsCommand(blockNumber, address, pageNumber));
             return commandResult
                 ? Ok(commandResult.Result)
                 : StatusCode(500, new { commandResult.FailureReason });

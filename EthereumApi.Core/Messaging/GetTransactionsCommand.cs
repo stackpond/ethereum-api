@@ -13,9 +13,9 @@ using TransactionDtoCollection = System.Collections.Generic.List<EthereumApi.Cor
 
 namespace EthereumApi.Core.Messaging
 {
-    public class GetTransactionsByBlockNumberAndAddressCommand : IRequest<CommandResult<TransactionDtoCollection>>
+    public class GetTransactionsCommand : IRequest<CommandResult<TransactionDtoCollection>>
     {
-        public GetTransactionsByBlockNumberAndAddressCommand(ulong blockNumber, string address, int pageNumber)
+        public GetTransactionsCommand(ulong blockNumber, string address, int pageNumber)
         {
             BlockNumber = blockNumber;
             Address = address;
@@ -27,22 +27,22 @@ namespace EthereumApi.Core.Messaging
         public int PageNumber { get; }
     }
 
-    public class GetTransactionsByBlockNumberAndAddressCommandHandler : IRequestHandler<GetTransactionsByBlockNumberAndAddressCommand,
+    public class GetTransactionsCommandCommandHandler : IRequestHandler<GetTransactionsCommand,
         CommandResult<TransactionDtoCollection>>
     {
-        private readonly ILogger<GetTransactionsByBlockNumberAndAddressCommandHandler> _logger;
+        private readonly ILogger<GetTransactionsCommandCommandHandler> _logger;
         private readonly IMapper _mapper;
         private readonly ITransactionRepository _transactionRepository;
 
-        public GetTransactionsByBlockNumberAndAddressCommandHandler(IMapper mapper,
-            ILogger<GetTransactionsByBlockNumberAndAddressCommandHandler> logger, ITransactionRepository transactionRepository)
+        public GetTransactionsCommandCommandHandler(IMapper mapper,
+            ILogger<GetTransactionsCommandCommandHandler> logger, ITransactionRepository transactionRepository)
         {
             _mapper = mapper;
             _logger = logger;
             _transactionRepository = transactionRepository;
         }
 
-        public async Task<CommandResult<TransactionDtoCollection>> Handle(GetTransactionsByBlockNumberAndAddressCommand request,
+        public async Task<CommandResult<TransactionDtoCollection>> Handle(GetTransactionsCommand request,
             CancellationToken cancellationToken)
         {
             string failureReason;
@@ -52,11 +52,11 @@ namespace EthereumApi.Core.Messaging
             {
                 if (string.IsNullOrWhiteSpace(request.Address))
                 {
-                    transactions = await _transactionRepository.GetTransactionsByBlockNumber(request.BlockNumber, request.PageNumber);
+                    transactions = await _transactionRepository.GetTransactions(request.BlockNumber, request.PageNumber);
                 }
                 else
                 {
-                    transactions = await _transactionRepository.GetTransactionsByBlockNumberAndAddress(request.BlockNumber, request.Address, request.PageNumber);
+                    transactions = await _transactionRepository.GetTransactions(request.BlockNumber, request.Address, request.PageNumber);
                 }
 
                 var transactionDtos = _mapper.Map<IEnumerable<TransactionDto>>(transactions);

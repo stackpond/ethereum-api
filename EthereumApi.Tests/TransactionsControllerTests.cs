@@ -25,11 +25,11 @@ namespace EthereumApi.Tests
         public async Task ShouldReturn200WhenGetByBlockNumberSucceeds()
         {
             // Arrange
-            _mediator.Setup(m => m.Send(It.IsAny<GetTransactionsByBlockNumberAndAddressCommand>(), It.IsAny<CancellationToken>()))
+            _mediator.Setup(m => m.Send(It.IsAny<GetTransactionsCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new CommandResult<TransactionDtoCollection>(new TransactionDtoCollection()));
 
             // Act
-            var actionResult = await _transactionsController.GetTransactionsByBlockNumberAndAddress(1, "0x1234", 1) as ObjectResult;
+            var actionResult = await _transactionsController.GetTransactions(1, "0x1234", 1) as ObjectResult;
 
             // Assert
             Assert.NotNull(actionResult);
@@ -40,11 +40,11 @@ namespace EthereumApi.Tests
         public async Task ShouldReturn500WhenGetByBlockNumberFails()
         {
             // Arrange
-            _mediator.Setup(m => m.Send(It.IsAny<GetTransactionsByBlockNumberAndAddressCommand>(), It.IsAny<CancellationToken>()))
+            _mediator.Setup(m => m.Send(It.IsAny<GetTransactionsCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new CommandResult<TransactionDtoCollection>("Failed"));
 
             // Act
-            var actionResult = await _transactionsController.GetTransactionsByBlockNumberAndAddress(1, " 0x1234", 1) as ObjectResult;
+            var actionResult = await _transactionsController.GetTransactions(1, " 0x1234", 1) as ObjectResult;
 
             // Assert
             Assert.NotNull(actionResult);

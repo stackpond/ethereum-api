@@ -8,9 +8,9 @@ using Microsoft.Extensions.Logging;
 
 namespace EthereumApi.Core.Messaging
 {
-    public class GetTransactionCountByBlockNumberCommand : IRequest<CommandResult<uint>>
+    public class GetTransactionCountCommand : IRequest<CommandResult<uint>>
     {
-        public GetTransactionCountByBlockNumberCommand(ulong blockNumber)
+        public GetTransactionCountCommand(ulong blockNumber)
         {
             BlockNumber = blockNumber;
         }
@@ -18,16 +18,16 @@ namespace EthereumApi.Core.Messaging
         public ulong BlockNumber { get; }
     }
 
-    public class GetTransactionCountByBlockNumberCommandHandler : IRequestHandler<
-        GetTransactionCountByBlockNumberCommand,
+    public class GetTransactionCountCommandCommandHandler : IRequestHandler<
+        GetTransactionCountCommand,
         CommandResult<uint>>
     {
-        private readonly ILogger<GetTransactionCountByBlockNumberCommandHandler> _logger;
+        private readonly ILogger<GetTransactionCountCommandCommandHandler> _logger;
         private readonly IMapper _mapper;
         private readonly ITransactionRepository _transactionRepository;
 
-        public GetTransactionCountByBlockNumberCommandHandler(IMapper mapper,
-            ILogger<GetTransactionCountByBlockNumberCommandHandler> logger,
+        public GetTransactionCountCommandCommandHandler(IMapper mapper,
+            ILogger<GetTransactionCountCommandCommandHandler> logger,
             ITransactionRepository transactionRepository)
         {
             _mapper = mapper;
@@ -35,13 +35,13 @@ namespace EthereumApi.Core.Messaging
             _transactionRepository = transactionRepository;
         }
 
-        public async Task<CommandResult<uint>> Handle(GetTransactionCountByBlockNumberCommand request,
+        public async Task<CommandResult<uint>> Handle(GetTransactionCountCommand request,
             CancellationToken cancellationToken)
         {
             try
             {
                 var blockTransactionCount =
-                    await _transactionRepository.GetTransactionsCountByBlockNumber(request.BlockNumber);
+                    await _transactionRepository.GetTransactionsCount(request.BlockNumber);
                 return new CommandResult<uint>(blockTransactionCount);
             }
             catch (Exception e)
