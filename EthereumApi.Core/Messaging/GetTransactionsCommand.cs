@@ -46,8 +46,9 @@ namespace EthereumApi.Core.Messaging
             CancellationToken cancellationToken)
         {
             string failureReason;
-            var failureException = default(Exception);
+            Exception failureException;
             var transactions = default(IEnumerable<Transaction>);
+
             try
             {
                 if (string.IsNullOrWhiteSpace(request.Address))
@@ -60,12 +61,7 @@ namespace EthereumApi.Core.Messaging
                 }
 
                 var transactionDtos = _mapper.Map<IEnumerable<TransactionDto>>(transactions);
-
-                if (transactionDtos.Any())
-                    return new CommandResult<TransactionDtoCollection>(new TransactionDtoCollection(transactionDtos));
-
-                failureReason = string.Format(Resource.TransactionsNotFoundFormat,
-                    request.Address);
+                return new CommandResult<TransactionDtoCollection>(new TransactionDtoCollection(transactionDtos));
             }
             catch (Exception e)
             {
