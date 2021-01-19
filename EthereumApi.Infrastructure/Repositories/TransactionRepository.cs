@@ -153,10 +153,10 @@ namespace EthereumApi.Infrastructure.Repositories
                 }
 
                 if (transactions.Count == minimumTransactionsToProcess)
-                    return transactions.Skip(numberOfItemsPerPage * (pageNumber - 1)).Take(numberOfItemsPerPage);
+                    break;
             }
 
-            return transactions;
+            return transactions.Skip(numberOfItemsPerPage * (pageNumber - 1)).Take(numberOfItemsPerPage);
         }
     }
 }
