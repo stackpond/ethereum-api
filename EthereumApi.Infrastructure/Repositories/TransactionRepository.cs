@@ -21,6 +21,7 @@ namespace EthereumApi.Infrastructure.Repositories
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _memoryCache;
+        private readonly MemoryCacheEntryOptions _cacheEntryOptions;
 
         public TransactionRepository(IMapper mapper, IConfiguration configuration, IBlockRepository blockRepository,
             IMemoryCache memoryCache, IHttpContextAccessor httpContextAccessor)
@@ -30,6 +31,8 @@ namespace EthereumApi.Infrastructure.Repositories
             _blockRepository = blockRepository;
             _memoryCache = memoryCache;
             _httpContextAccessor = httpContextAccessor;
+            _cacheEntryOptions = new MemoryCacheEntryOptions().SetSize(1)
+                .SetSlidingExpiration(TimeSpan.FromMinutes(int.Parse(_configuration["cacheExpirationInMinutes"])));
         }
 
         public async Task<uint> GetTransactionsCount(ulong blockNumber)
@@ -51,12 +54,12 @@ namespace EthereumApi.Infrastructure.Repositories
                 }, Constants.JsonContentType);
 
                 var apiResponse = await apiClient.ExecuteAsync(apiRequest);
-                var apiBlockTransactionCountResponse =
+                var blockTransactionCountApiResponse =
                     JsonConvert.DeserializeObject<InfuraGetBlockTransactionCountApiResponse>(apiResponse.Content);
-                blockTransactionCount = Convert.ToUInt32(apiBlockTransactionCountResponse.Result, 16);
-                var cacheEntryOptions = new MemoryCacheEntryOptions().SetSize(1)
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(int.Parse(_configuration["cacheExpirationInMinutes"])));
-                _memoryCache.Set(cacheKey, blockTransactionCount, cacheEntryOptions);
+
+                blockTransactionCount = Convert.ToUInt32(blockTransactionCountApiResponse.Result, 16);
+
+                _memoryCache.Set(cacheKey, blockTransactionCount, _cacheEntryOptions);
             }
 
             return blockTransactionCount;
@@ -84,21 +87,18 @@ namespace EthereumApi.Infrastructure.Repositories
                     apiRequest.AddJsonBody(new
                     {
                         jsonrpc = Constants.Ethereum.JsonRpcVersion,
-                        method = Constants.Ethereum.GetTransactionHashCommandName,
+                        method = Constants.Ethereum.GetTransactionByHashCommandName,
                         @params = new JsonArray { transactionHash },
                         id = Constants.Ethereum.NetworkId
                     }, Constants.JsonContentType);
 
                     var apiResponse = await apiClient.ExecuteAsync(apiRequest);
-                    var apiTransactionResponse =
+                    var transactionApiResponse =
                         JsonConvert.DeserializeObject<InfuraGetTransactionApiResponse>(apiResponse.Content);
 
-                    transaction = _mapper.Map<Transaction>(apiTransactionResponse);
+                    transaction = _mapper.Map<Transaction>(transactionApiResponse);
 
-                    var cacheEntryOptions = new MemoryCacheEntryOptions().SetSize(1)
-                        .SetSlidingExpiration(
-                            TimeSpan.FromMinutes(int.Parse(_configuration["cacheExpirationInMinutes"])));
-                    _memoryCache.Set(cacheKey, transaction, cacheEntryOptions);
+                    _memoryCache.Set(cacheKey, transaction, _cacheEntryOptions);
                 }
 
                 transactions.Add(transaction);
@@ -129,7 +129,7 @@ namespace EthereumApi.Infrastructure.Repositories
                     apiRequest.AddJsonBody(new
                     {
                         jsonrpc = Constants.Ethereum.JsonRpcVersion,
-                        method = Constants.Ethereum.GetTransactionHashCommandName,
+                        method = Constants.Ethereum.GetTransactionByHashCommandName,
                         @params = new JsonArray { transactionHash },
                         id = Constants.Ethereum.NetworkId
                     }, Constants.JsonContentType);
@@ -140,10 +140,7 @@ namespace EthereumApi.Infrastructure.Repositories
 
                     transaction = _mapper.Map<Transaction>(apiTransactionResponse);
 
-                    var cacheEntryOptions = new MemoryCacheEntryOptions().SetSize(1)
-                        .SetSlidingExpiration(
-                            TimeSpan.FromMinutes(int.Parse(_configuration["cacheExpirationInMinutes"])));
-                    _memoryCache.Set(cacheKey, transaction, cacheEntryOptions);
+                    _memoryCache.Set(cacheKey, transaction, _cacheEntryOptions);
                 }
 
                 if (!string.IsNullOrWhiteSpace(transaction.To) && transaction.To.Equals(address, StringComparison.OrdinalIgnoreCase) ||

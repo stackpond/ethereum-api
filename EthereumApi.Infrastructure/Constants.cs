@@ -16,13 +16,9 @@
         {
             public const int NetworkId = 1;
             public const string JsonRpcVersion = "2.0";
-            public const string GetLatestBlockNumberCommandName = "eth_blockNumber";
             public const string GetBlockByNumberCommandName = "eth_getBlockByNumber";
-            public const string GetTransactionHashCommandName = "eth_getTransactionByHash";
+            public const string GetTransactionByHashCommandName = "eth_getTransactionByHash";
             public const string GetBlockTransactionCountCommandName = "eth_getBlockTransactionCountByNumber";
-
-            public const string GetTransactionByBlockNumberAndIndexCommandName =
-                "eth_getTransactionByBlockNumberAndIndex";
         }
     }
 }
